@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import {getAuth,signInWithPopup,GoogleAuthProvider, onAuthStateChanged,signOut} from "firebase/auth";
 import {collection, getDocs, addDoc, doc, deleteDoc, updateDoc} from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -22,7 +23,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
-
+const provider = new GoogleAuthProvider();
+const auth = getAuth(app);
 const tarp_orders_ref = collection(db, "tarp_orders");
-
-export {db, tarp_orders_ref, getDocs, addDoc, doc, deleteDoc, updateDoc};
+const authAndProvider = {auth:auth, provider:provider};
+export {db,app, tarp_orders_ref,signInWithPopup, getDocs, addDoc, doc, deleteDoc, updateDoc,auth,provider,authAndProvider,onAuthStateChanged,signOut};

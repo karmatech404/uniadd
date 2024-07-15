@@ -28,7 +28,7 @@ import { useReducer } from "react";
 import { sample_order_array } from "../localData";
 import OrderInfoModal from "../components/OrderInfoModal";
 import { FilterComp } from "../components/FilterComp";
-
+import { onAuthStateChanged,auth } from "../../server/firebase-config";
 import {
   tarp_order_reducer_function,
   tarp_orders_db_data_reducer_func,
@@ -48,6 +48,7 @@ import Footer from "../components/Footer";
 
 import SyncLoader from "react-spinners/SyncLoader";
 import GridLoader from "react-spinners/GridLoader";
+import { GoogleLogin } from "../components/GoogleLogin";
 export default function TarpOrders() {
   // const tarp_db_data_obj = {
   //   cust_name:"",
@@ -81,7 +82,7 @@ export default function TarpOrders() {
   });
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-
+const [loggedIn,setLoggedIn] = useState(false);
   //CRUD METHODSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
   useEffect(() => {
     fetch_tarps_data();
@@ -90,6 +91,22 @@ export default function TarpOrders() {
   useEffect(() => {
     searchFormLogic();
   }, [state.search_value]);
+
+  useEffect(() => {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setLoggedIn(true);
+          console.log("USER IS LOGGED  IN");
+          localStorage.setItem("loggedIn",true);
+          //  console.log(loggedIn);
+        }else{
+          setLoggedIn(false);
+          console.log("USER IS NOT LOGGED  IN");
+          // console.log(loggedIn);
+          localStorage.setItem("loggedIn",false);
+        }
+      })
+  },[]);
 
   //GET REQUESTSSSSSS____________________________________________________
   function fetch_tarps_data() {
@@ -255,7 +272,11 @@ export default function TarpOrders() {
 
   return (
     <div className=" tw-p-2  md:tw-pt-[70px] tw-pt-[70px]">
-      <div className=" tw-bg-slatse-700 tw-grid tw-grid-cols-1 tw-min-h-[50px]">
+      {
+        loggedIn || JSON.parse(localStorage.getItem("loggedIn")) ? 
+        (
+          <div>
+            <div className=" tw-bg-slatse-700 tw-grid tw-grid-cols-1 tw-min-h-[50px]">
         <div className=" tw-border-4 tw-border-blue-100 tw-h-[80%] tw-flex tw-w-[70%] tw-drop-shadow-lg tw-m-auto tw-bg-white tw-rounded-3xl">
           {/* SEARCH ICON  */}
           <div
@@ -395,7 +416,7 @@ export default function TarpOrders() {
       ) : null}
 
       {/* CRAZY DIV */}
-      <Footer show_filter={state.show_filter} dispatch={dispatch} />
+      <Footer show_filter={state.show_filter} dispatch={dispatch} loggedIn={loggedIn} />
       <div className=" tw-z-[100] tw-cursor-pointer tw-fixed tw-left-0 tw-bottom-[40%] tw-rounsded-full tw-hidden tw-ansmate-pulse  tw-bg-green-200 tw-p-8s">
         <h1
           onClick={() => {
@@ -476,6 +497,12 @@ export default function TarpOrders() {
         show_filter={state.show_filter}
         dispatch={dispatch}
       />
+          </div>
+        ) : 
+        (
+          <div className=" tw-flex tw-justify-center tw-items-center tw-w-full tw-h-[100vh]"><GoogleLogin loggedIn = {loggedIn}/></div>
+        )
+      }
     </div>
   );
   {
