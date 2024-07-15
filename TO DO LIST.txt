@@ -1,0 +1,2 @@
+Know when does the DeleteDocs or other CRUD funcs in firestore Returns an internet connectivity error.
+Already know in the getDocs Func(fetching data) but in other, nope.
